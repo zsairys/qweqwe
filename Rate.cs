@@ -8,22 +8,22 @@ namespace pis1
 {
     class Rate
     {
-        public string Value1 { get; set; }
-        public string Value2 { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
         public double Course { get; set; }
         public DateTime Date { get; set; }
 
         public Rate(string v1, string v2, double course, DateTime date)
         {
-            Value1 = v1;
-            Value2 = v2;
+            From = v1;
+            To = v2;
             Course = course;
             Date = date;
         }
 
-        public string Conv()
+        public string toString()
         {
-            return $"Курс {Value1} к {Value2} равен {Course} на момент {Date.ToString("yyyy.MM.dd")}";
+            return $"Курс {From} к {To} равен {Course} на момент {Date.ToString("yyyy.MM.dd")}";
         }
     }
 }

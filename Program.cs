@@ -29,7 +29,7 @@ namespace pis1
                         {
                             rates.Add(newRate);
                             Console.WriteLine("Курс добавлен");
-                            Console.WriteLine(newRate.Conv());
+                            Console.WriteLine(newRate.toString());
                         }
                         break;
 
@@ -51,7 +51,7 @@ namespace pis1
 
         static Rate InputRate()
         {
-            Console.WriteLine("Введите данные в формате: VAL VAL 0,0 2026.01.01");
+            Console.WriteLine("Введите данные в формате:  \"VAL\" \"VAL\" 0,0 2026.01.01");
             Console.Write("Ввод: ");
             string input = Console.ReadLine();
 
@@ -95,7 +95,7 @@ namespace pis1
             Console.WriteLine("Все курсы");
             for (int i = 0; i < rates.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {rates[i].Conv()}");
+                Console.WriteLine($"{i + 1}. {rates[i].toString()}");
             }
         }
     }
