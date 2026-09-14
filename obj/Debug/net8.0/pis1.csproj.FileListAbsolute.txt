@@ -1,0 +1,14 @@
+C:\Users\sairy\source\repos\pis1\pis1\bin\Debug\net8.0\pis1.exe
+C:\Users\sairy\source\repos\pis1\pis1\bin\Debug\net8.0\pis1.deps.json
+C:\Users\sairy\source\repos\pis1\pis1\bin\Debug\net8.0\pis1.runtimeconfig.json
+C:\Users\sairy\source\repos\pis1\pis1\bin\Debug\net8.0\pis1.dll
+C:\Users\sairy\source\repos\pis1\pis1\bin\Debug\net8.0\pis1.pdb
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.AssemblyInfoInputs.cache
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.AssemblyInfo.cs
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.csproj.CoreCompileInputs.cache
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.dll
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\refint\pis1.dll
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.pdb
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.genruntimeconfig.cache
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\ref\pis1.dll
