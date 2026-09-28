@@ -1,7 +1,32 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\sairy\\source\\repos\\pis1\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9E5B7CA4-0767-4418-92EE-6AC9DF24315D}|pis1.Tests\\pis1.Tests.csproj|c:\\users\\sairy\\source\\repos\\pis1\\pis1.tests\\ratemanagertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9E5B7CA4-0767-4418-92EE-6AC9DF24315D}|pis1.Tests\\pis1.Tests.csproj|solutionrelative:pis1.tests\\ratemanagertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|c:\\users\\sairy\\source\\repos\\pis1\\pis1\\ratemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|solutionrelative:pis1\\ratemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9E5B7CA4-0767-4418-92EE-6AC9DF24315D}|pis1.Tests\\pis1.Tests.csproj|c:\\users\\sairy\\source\\repos\\pis1\\pis1.tests\\ratetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9E5B7CA4-0767-4418-92EE-6AC9DF24315D}|pis1.Tests\\pis1.Tests.csproj|solutionrelative:pis1.tests\\ratetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|c:\\users\\sairy\\source\\repos\\pis1\\pis1\\rate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|solutionrelative:pis1\\rate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|c:\\users\\sairy\\source\\repos\\pis1\\pis1\\exchanger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|solutionrelative:pis1\\exchanger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|c:\\users\\sairy\\source\\repos\\pis1\\pis1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{45BD2EDF-1FA1-46CA-AF76-DF4486AEB641}|pis1\\pis1.csproj|solutionrelative:pis1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +34,89 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "RateManagerTests.cs",
+              "DocumentMoniker": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1.Tests\\RateManagerTests.cs",
+              "RelativeDocumentMoniker": "pis1.Tests\\RateManagerTests.cs",
+              "ToolTip": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1.Tests\\RateManagerTests.cs",
+              "RelativeToolTip": "pis1.Tests\\RateManagerTests.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-28T11:36:00.938Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RateTests.cs",
+              "DocumentMoniker": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1.Tests\\RateTests.cs",
+              "RelativeDocumentMoniker": "pis1.Tests\\RateTests.cs",
+              "ToolTip": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1.Tests\\RateTests.cs",
+              "RelativeToolTip": "pis1.Tests\\RateTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-28T11:08:42.922Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Exchanger.cs",
+              "DocumentMoniker": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\Exchanger.cs",
+              "RelativeDocumentMoniker": "pis1\\Exchanger.cs",
+              "ToolTip": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\Exchanger.cs",
+              "RelativeToolTip": "pis1\\Exchanger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T07:14:37.113Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Rate.cs",
+              "DocumentMoniker": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\Rate.cs",
+              "RelativeDocumentMoniker": "pis1\\Rate.cs",
+              "ToolTip": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\Rate.cs",
+              "RelativeToolTip": "pis1\\Rate.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAswB4AAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T07:14:12.461Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RateManager.cs",
+              "DocumentMoniker": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\RateManager.cs",
+              "RelativeDocumentMoniker": "pis1\\RateManager.cs",
+              "ToolTip": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\RateManager.cs",
+              "RelativeToolTip": "pis1\\RateManager.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAgwCMAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T07:12:17.812Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\Program.cs",
+              "RelativeDocumentMoniker": "pis1\\Program.cs",
+              "ToolTip": "C:\\Users\\sairy\\source\\repos\\pis1\\pis1\\Program.cs",
+              "RelativeToolTip": "pis1\\Program.cs",
+              "ViewState": "AgIAAKYAAAAAAAAAAADwv7kAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-21T12:14:03.805Z",
+              "EditorCaption": ""
             }
           ]
         }

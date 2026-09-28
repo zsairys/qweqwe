@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Text;
 
 namespace pis1
 {
     class Program
     {
+        static readonly RateManager manager = new RateManager();
+
         static void Main(string[] args)
         {
-            List<Rate> cbRates = new List<Rate>();
-            List<Exchanger> exchangers = new List<Exchanger>();
-
             while (true)
             {
                 Console.WriteLine();
@@ -30,68 +27,31 @@ namespace pis1
 
                 switch (choice)
                 {
-                    case "1":
-                        Rate r = InputCbRate();
-                        if (r != null)
-                        {
-                            cbRates.Add(r);
-                            Console.WriteLine("Курс ЦБ добавлен:");
-                            Console.WriteLine(r.toString());
-                        }
-                        break;
-
-                    case "2":
-                        ShowRates(cbRates);
-                        break;
-
-                    case "3":
-                        Exchanger ex = InputExchanger();
-                        if (ex != null)
-                        {
-                            exchangers.Add(ex);
-                            Console.WriteLine("Обменник создан:");
-                            Console.WriteLine(ex.toString());
-                        }
-                        break;
-
-                    case "4":
-                        DoConversion(cbRates, exchangers);
-                        break;
-
-                    case "5":
-                        LoadFromFile(cbRates, exchangers);
-                        break;
-
-                    case "6":
-                        SaveToFile(cbRates, exchangers);
-                        break;
-
-                    case "0":
-                        Console.WriteLine("Выход из программы");
-                        return;
-
-                    default:
-                        Console.WriteLine("Неверный выбор");
-                        break;
+                    case "1": HandleAddCbRate(); break;
+                    case "2": HandleShowRates(); break;
+                    case "3": HandleAddExchanger(); break;
+                    case "4": HandleConvert(); break;
+                    case "5": HandleLoad(); break;
+                    case "6": HandleSave(); break;
+                    case "0": Console.WriteLine("Выход из программы"); return;
+                    default: Console.WriteLine("Неверный выбор"); break;
                 }
             }
         }
 
-
-
-        static Rate InputCbRate()
+        static void HandleAddCbRate()
         {
-            Console.WriteLine("Введите курс ЦБ в формате: VAL VAL 0,0 2026.01.01 isActive");
+            Console.WriteLine("Введите курс ЦБ: VAL VAL 0,0 2026.01.01");
             Console.Write("Ввод: ");
             string input = Console.ReadLine();
 
             try
             {
                 string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length != 5)
+                if (parts.Length != 4)
                 {
                     Console.WriteLine("Неверное количество параметров");
-                    return null;
+                    return;
                 }
 
                 string v1 = parts[0];
@@ -99,24 +59,40 @@ namespace pis1
                 double c = double.Parse(parts[2].Replace('.', ','));
                 DateTime date = DateTime.ParseExact(parts[3], "yyyy.MM.dd",
                                                     CultureInfo.InvariantCulture);
-                bool isActive = bool.TryParse(parts[4], out bool result);
 
-                return new Rate(v1, v2, c, date, isActive);
+                var r = new Rate(v1, v2, c, date);
+                manager.AddCbRate(r);
+
+                Console.WriteLine("Курс ЦБ добавлен:");
+                Console.WriteLine(r.toString());
             }
-
+            catch (FormatException)
+            {
+                Console.WriteLine("Неверный формат данных!");
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Ошибка - {ex.Message}");
-                return null;
             }
         }
 
-
-        static Exchanger InputExchanger()
+        static void HandleShowRates()
         {
-            Console.WriteLine("Введите данные обменника в формате:");
-            Console.WriteLine("  VAL VAL 0,0 2026.01.01 \"Название\" 0,0");
-            Console.WriteLine("  (откуда, куда, курс ЦБ для справки, дата, имя в кавычках, СВОЙ курс, активен ли курс)");
+            var rates = manager.GetCbRates();
+            if (rates.Count == 0)
+            {
+                Console.WriteLine("Список курсов ЦБ пуст");
+                return;
+            }
+
+            Console.WriteLine("Курсы Центробанка:");
+            for (int i = 0; i < rates.Count; i++)
+                Console.WriteLine($"{i + 1}. {rates[i].toString()}");
+        }
+
+        static void HandleAddExchanger()
+        {
+            Console.WriteLine("Введите обменник: VAL VAL 2026.01.01 \"Название\" 0,0");
             Console.Write("Ввод: ");
             string input = Console.ReadLine();
 
@@ -127,7 +103,7 @@ namespace pis1
                 if (q1 < 0 || q2 < 0)
                 {
                     Console.WriteLine("Имя обменника должно быть в кавычках");
-                    return null;
+                    return;
                 }
 
                 string name = input.Substring(q1 + 1, q2 - q1 - 1);
@@ -135,112 +111,80 @@ namespace pis1
                 string before = input.Substring(0, q1).Trim();
                 string after = input.Substring(q2 + 1).Trim();
 
-                string[] parts = before.Split(' ');
-                if (parts.Length != 5)
+                string[] parts = before.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 3)
                 {
                     Console.WriteLine("Неверное количество параметров до имени");
-                    return null;
+                    return;
                 }
 
                 string v1 = parts[0];
                 string v2 = parts[1];
-                double cbCourse = double.Parse(parts[2].Replace('.', ','));
-                DateTime date = DateTime.ParseExact(parts[3], "yyyy.MM.dd",
+                DateTime date = DateTime.ParseExact(parts[2], "yyyy.MM.dd",
                                                     CultureInfo.InvariantCulture);
                 double ownCourse = double.Parse(after.Replace('.', ','));
-                string isActive = parts[4];
 
-                return new Exchanger(v1, v2, cbCourse, date, name, ownCourse);
+                var ex = new Exchanger(v1, v2, date, name, ownCourse);
+                manager.AddExchanger(ex);
+
+                Console.WriteLine("Обменник создан:");
+                Console.WriteLine(ex.toString());
             }
             catch (FormatException)
             {
-                Console.WriteLine("Неверный формат данных");
-                return null;
+                Console.WriteLine("Неверный формат данных!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-                return null;
+                Console.WriteLine($"Ошибка - {ex.Message}");
             }
         }
 
 
-        static void ShowRates(List<Rate> rates)
+        static void HandleConvert()
         {
-            if (rates.Count == 0)
+            if (manager.IsEmpty())
             {
-                Console.WriteLine("Список курсов ЦБ пуст");
+                Console.WriteLine("Нет ни курсов ЦБ, ни обменников.");
                 return;
             }
 
-            Console.WriteLine("Курсы Центробанка:");
-            for (int i = 0; i < rates.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {rates[i].toString()}");
-            }
-        }
-
-        static void DoConversion(List<Rate> cbRates, List<Exchanger> exchangers)
-        {
-            if (cbRates.Count == 0 && exchangers.Count == 0)
-            {
-                Console.WriteLine("Нет ни курсов. Сначала создайте курс (цб или обменника)");
-                return;
-            }
-
-            Console.WriteLine("Где будет происходить конвертация");
+            Console.WriteLine("У кого конвертируем?");
             Console.WriteLine("  0 - по курсу Центробанка");
-            for (int i = 0; i < exchangers.Count; i++)
-            {
-                Console.WriteLine($"  {i + 1} - {exchangers[i].Name}");
-            }
+            for (int i = 0; i < manager.ExchangerCount; i++)
+                Console.WriteLine($"  {i + 1} - {manager.GetExchangers()[i].Name}");
 
             Console.Write("Ваш выбор: ");
             if (!int.TryParse(Console.ReadLine(), out int idx) ||
-                idx < 0 || idx > exchangers.Count)
+                idx < 0 || idx > manager.ExchangerCount)
             {
                 Console.WriteLine("Неверный выбор");
                 return;
             }
 
             Console.Write("Валюта, из которой конвертируем: ");
-            string from = Console.ReadLine();
+            string from = Console.ReadLine().Trim();
 
             Console.Write("Валюта, в которую конвертируем: ");
-            string to = Console.ReadLine();
+            string to = Console.ReadLine().Trim();
 
             Rate converter;
             string who;
 
             if (idx == 0)
             {
-                Rate found = null;
-                foreach (var r in cbRates)
-                {
-                    if (r.Matches(from, to) || r.Matches(to, from))
-                    {
-                        found = r;
-                        break;
-                    }
-                }
-                if (found == null)
+                converter = manager.FindCbRate(from, to);
+                if (converter == null)
                 {
                     Console.WriteLine($"У ЦБ нет курса для пары {from} <-> {to}");
                     return;
                 }
-                converter = found;
                 who = "Центробанк";
             }
             else
             {
-                converter = exchangers[idx - 1];
-                who = exchangers[idx - 1].Name;
-
-                if (!converter.Matches(from, to) && !converter.Matches(to, from))
-                {
-                    Console.WriteLine($"Обменник работает только с парой {converter.From} <-> {converter.To}");
-                    return;
-                }
+                converter = manager.GetExchangerAt(idx - 1);
+                who = ((Exchanger)converter).Name;
             }
 
             Console.Write("Сумма: ");
@@ -251,128 +195,69 @@ namespace pis1
                 return;
             }
 
-            double result = converter.Convert(amount, from, to);
-
-            Console.WriteLine();
-            Console.WriteLine("---------- Результат");
-            Console.WriteLine($"Обменник:    {who}");
-            Console.WriteLine($"Валюты:   {from} -> {to}");
-
-            if (converter is Exchanger ex)
-            {
-                Console.WriteLine($"Курс обменника: {ex.OwnCourse}");
-                Console.WriteLine($"Курс ЦБ:        {ex.Course}");
-            }
-            else
-            {
-                Console.WriteLine($"Курс ЦБ: {converter.Course}");
-            }
-
-            Console.WriteLine($"Сумма:  {amount} {from}");
-            Console.WriteLine($"Итог:   {result:F2} {to}");
-
-
-        }
-        static void LoadFromFile(List<Rate> cbRates, List<Exchanger> exchangers)
-        {
-            Console.Write("Путь к файлу: ");
-            string path = Console.ReadLine();
-            string[] lines;
             try
             {
-                lines = File.ReadAllLines(path);
+                double result = manager.Convert(converter, amount, from, to);
+
+                Console.WriteLine();
+                Console.WriteLine("------ Результат ------");
+                Console.WriteLine($"Кто:    {who}");
+                Console.WriteLine($"Пара:   {from} -> {to}");
+
+                if (converter is Exchanger ex)
+                    Console.WriteLine($"Курс обменника: {ex.OwnCourse}");
+                else
+                    Console.WriteLine($"Курс ЦБ: {converter.Course}");
+
+                Console.WriteLine($"Сумма:  {amount} {from}");
+                Console.WriteLine($"Итог:   {result:F2} {to}");
+                Console.WriteLine("-----------------------");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка - {ex.Message}");
-                return;
-            }
-
-
-            int lineNum = 0;
-
-            foreach (string raw in lines)
-            {
-                lineNum++;
-                string line = raw;
-
-                if (line.Length == 0 )
-                    continue;
-
-                try
-                {
-                    string[] parts = line.Split(' ');
-                    if (parts.Length != 5)
-                        throw new FormatException("Должно быть 5 полей: чей_курс валюта_из валюта_куда курс дата");
-
-                    string owner = parts[0];
-                    string from = parts[1];
-                    string to = parts[2];
-                    double course = double.Parse(parts[3].Replace('.', ','));
-                    DateTime date = DateTime.ParseExact(parts[4], "yyyy.MM.dd", CultureInfo.InvariantCulture);
-                    bool isActive = bool.TryParse(parts[5], out bool result);
-
-                    if (owner.Equals("ЦБ", StringComparison.OrdinalIgnoreCase))
-                    {
-                        cbRates.Add(new Rate(from, to, course, date, isActive));
-                    }
-                    else
-                    {
-                        exchangers.Add(new Exchanger(from, to, 0, date, owner, course));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Строка {lineNum}: ошибка - {ex.Message}");
-                }
+                Console.WriteLine($"Ошибка: {ex.Message}");
             }
         }
 
-        static void SaveToFile(List<Rate> cbRates, List<Exchanger> exchangers)
+        static void HandleLoad()
         {
-            if (cbRates.Count == 0 && exchangers.Count == 0)
+            Console.Write("Путь к файлу: ");
+            string path = Console.ReadLine().Trim();
+
+            try
+            {
+                var (cb, ex, errors) = manager.LoadFromFile(path);
+
+                foreach (var err in errors)
+                    Console.WriteLine(err);
+
+                Console.WriteLine($"Загружено: курсов ЦБ — {cb}, обменников — {ex}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Не удалось загрузить: {ex.Message}");
+            }
+        }
+
+        static void HandleSave()
+        {
+            if (manager.IsEmpty())
             {
                 Console.WriteLine("Нечего сохранять");
                 return;
             }
 
             Console.Write("Путь к файлу для сохранения: ");
-            string path = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(path))
-            {
-                Console.WriteLine("Путь не может быть пустым");
-                return;
-            }
-
-            var lines = new List<string>();
-
-            lines.Add("# чей_курс валюта_из валюта_куда курс дата");
-            lines.Add("");
-
-            foreach (var r in cbRates)
-            {
-                string course = r.Course.ToString(CultureInfo.InvariantCulture);
-                string date = r.Date.ToString("yyyy.MM.dd", CultureInfo.InvariantCulture);
-                lines.Add($"ЦБ {r.From} {r.To} {course} {date}");
-            }
-
-            foreach (var ex in exchangers)
-            {
-                string course = ex.OwnCourse.ToString(CultureInfo.InvariantCulture);
-                string date = ex.Date.ToString("yyyy.MM.dd", CultureInfo.InvariantCulture);
-                lines.Add($"\"{ex.Name}\" {ex.From} {ex.To} {course} {date}");
-            }
+            string path = Console.ReadLine().Trim();
 
             try
             {
-                File.WriteAllLines(path, lines, Encoding.UTF8);
-                Console.WriteLine($"Сохранено: курсов ЦБ — {cbRates.Count}, обменников — {exchangers.Count}");
-                Console.WriteLine($"Файл: {Path.GetFullPath(path)}");
+                manager.SaveToFile(path);
+                Console.WriteLine($"Сохранено: ЦБ — {manager.CbCount}, обменников — {manager.ExchangerCount}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Не удалось сохранить файл: {ex.Message}");
+                Console.WriteLine($"Не удалось сохранить: {ex.Message}");
             }
         }
     }

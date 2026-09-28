@@ -2,14 +2,16 @@
 
 namespace pis1
 {
-    class Rate
+    public class Rate
     {
         public string From { get; set; }
         public string To { get; set; }
         public double Course { get; set; }
         public DateTime Date { get; set; }
         public bool IsActive { get; set; }
-        public Rate(string v1, string v2, double course, DateTime date, bool isActive)
+
+        public Rate(string v1, string v2, double course, DateTime date,
+                    bool isActive = true)
         {
             From = v1;
             To = v2;
@@ -17,9 +19,11 @@ namespace pis1
             Date = date;
             IsActive = isActive;
         }
+
         public virtual string toString()
         {
-            return $"[ЦБ РФ] Курс {From} к {To} = {Course} на {Date:yyyy.MM.dd}";
+            string status = IsActive ? "" : " [НЕАКТИВЕН]";
+            return $"[ЦБ РФ] Курс {From} к {To} = {Course} на {Date:yyyy.MM.dd}{status}";
         }
 
         public bool Matches(string from, string to)
@@ -30,19 +34,13 @@ namespace pis1
 
         public virtual double Convert(double amount, string from, string to)
         {
-
             if (From.ToUpper() == from.ToUpper() &&
                 To.ToUpper() == to.ToUpper())
-            {
                 return amount / Course;
-            }
-
 
             if (From.ToUpper() == to.ToUpper() &&
                 To.ToUpper() == from.ToUpper())
-            {
                 return amount * Course;
-            }
 
             throw new Exception($"Курс {From}->{To} не подходит для {from}->{to}");
         }

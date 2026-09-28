@@ -12,3 +12,4 @@ C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\refint\pis1.dll
 C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.pdb
 C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.genruntimeconfig.cache
 C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\ref\pis1.dll
+C:\Users\sairy\source\repos\pis1\pis1\obj\Debug\net8.0\pis1.sourcelink.json
