@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using pis1;
 using Xunit;
 
 namespace pis1.Tests
@@ -8,99 +8,130 @@ namespace pis1.Tests
     public class RateManagerTests
     {
         [Fact]
-        public void AddCbRate_AddsToList()
+        public void Manager_AddAndInspect()
         {
             var m = new RateManager();
-            var r = new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1));
-            m.AddCbRate(r);
 
+            Assert.True(m.IsEmpty());
+            Assert.Equal(0, m.CbCount);
+            Assert.Equal(0, m.ExchangerCount);
+
+            m.AddCbRate(new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1)));
+            m.AddExchanger(new Exchanger("RUB", "USD", new DateTime(2026, 1, 1), "Сбер", 90));
+
+            Assert.False(m.IsEmpty());
             Assert.Equal(1, m.CbCount);
-            Assert.Same(r, m.GetCbRates()[0]);
-        }
+            Assert.Equal(1, m.ExchangerCount);
 
-        [Fact]
-        public void AddCbRate_Null_Throws()
-        {
-            var m = new RateManager();  
+            Assert.Single(m.GetCbRates());
+            Assert.Single(m.GetExchangers());
+
+            Assert.NotNull(m.GetExchangerAt(0));
+            Assert.Null(m.GetExchangerAt(5));
+            Assert.Null(m.GetExchangerAt(-1));
+
             Assert.Throws<ArgumentNullException>(() => m.AddCbRate(null));
-        }
-
-        [Fact]
-        public void AddExchanger_Null_Throws()
-        {
-            var m = new RateManager();
             Assert.Throws<ArgumentNullException>(() => m.AddExchanger(null));
         }
 
         [Fact]
-        public void IsEmpty_TrueForNewManager()
+        public void Manager_FindCbRate_AllCases()
         {
             var m = new RateManager();
-            Assert.True(m.IsEmpty());
+            m.AddCbRate(new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1)));
+            m.AddCbRate(new Rate("EUR", "RUB", 100, new DateTime(2026, 1, 1), false));
+
+            Assert.NotNull(m.FindCbRate("RUB", "USD"));
+            Assert.NotNull(m.FindCbRate("USD", "RUB"));
+            Assert.Null(m.FindCbRate("EUR", "RUB"));
+            Assert.Null(m.FindCbRate("GBP", "JPY"));
         }
 
         [Fact]
-        public void IsEmpty_FalseAfterAdding()
+        public void Manager_Convert_AllCases()
         {
             var m = new RateManager();
-            m.AddCbRate(new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1)));
 
-            Assert.False(m.IsEmpty());
+            var cb = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1));
+            var ex = new Exchanger("RUB", "USD", new DateTime(2026, 1, 1), "Сбер", 90);
+            var inactive = new Rate("EUR", "RUB", 100, new DateTime(2026, 1, 1), false);
+
+            m.AddCbRate(cb);
+            m.AddCbRate(inactive);
+            m.AddExchanger(ex);
+
+            Assert.Equal(100.0 / 70.0, m.Convert(cb, 100, "RUB", "USD"), 5);
+            Assert.Equal(100.0 / 90.0, m.Convert(ex, 100, "RUB", "USD"), 5);
+
+            Assert.Throws<Exception>(() => m.Convert(inactive, 100, "EUR", "RUB"));
+            Assert.Throws<Exception>(() => m.Convert(cb, 100, "GBP", "JPY"));
+            Assert.Throws<ArgumentNullException>(() => m.Convert(null, 100, "RUB", "USD"));
         }
 
         [Fact]
-        public void FindCbRate_FindsActiveRate()
+        public void Manager_SaveAndLoad_RoundTrip()
         {
-            var m = new RateManager();
-            m.AddCbRate(new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1)));
+            var m1 = new RateManager();
+            m1.AddCbRate(new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1)));
+            m1.AddCbRate(new Rate("EUR", "RUB", 100, new DateTime(2026, 1, 1), false));
+            m1.AddExchanger(new Exchanger("RUB", "USD", new DateTime(2026, 1, 1),
+                                          "Сбер", 90));
 
-            var found = m.FindCbRate("USD", "RUB");
+            string path = Path.GetTempFileName();
+            try
+            {
+                m1.SaveToFile(path);
 
-            Assert.NotNull(found);
-            Assert.Equal("USD", found.From);
+                var m2 = new RateManager();
+                var (cb, ex, errors) = m2.LoadFromFile(path);
+
+                Assert.Equal(2, cb);
+                Assert.Equal(1, ex);
+                Assert.Empty(errors);
+
+                Assert.Equal(2, m2.CbCount);
+                Assert.Equal(1, m2.ExchangerCount);
+
+                Assert.True(m2.GetCbRates()[0].IsActive);
+                Assert.False(m2.GetCbRates()[1].IsActive);
+
+                Assert.Equal("Сбер", m2.GetExchangers()[0].Name);
+                Assert.Equal(90, m2.GetExchangers()[0].OwnCourse);
+            }
+            finally
+            {
+                File.Delete(path);
+            }
         }
 
         [Fact]
-        public void FindCbRate_FindsReverseDirection()
+        public void Manager_Load_HandlesBadLines()
         {
-            var m = new RateManager();
-            m.AddCbRate(new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1)));
-            var found = m.FindCbRate("RUB", "USD");
+            string path = Path.GetTempFileName();
+            try
+            {
+                File.WriteAllLines(path, new[]
+                {
+                    "# комментарий",
+                    "",
+                    "ЦБ RUB USD 70 2026.01.01 true",
+                    "плохая строка без полей",
+                    "ЦБ EUR RUB 100 2026.01.01 false",
+                    "\"Сбер\" RUB USD 90 2026.01.01 true"
+                });
 
-            Assert.NotNull(found);
-        }
+                var m = new RateManager();
+                var (cb, ex, errors) = m.LoadFromFile(path);
 
-        [Fact]
-        public void FindCbRate_SkipsInactive()
-        {
-            var m = new RateManager();
-            m.AddCbRate(new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1), false));
-
-            var found = m.FindCbRate("USD", "RUB");
-
-            Assert.Null(found);
-        }
-
-        [Fact]
-        public void Convert_ThroughCb_Works()
-        {
-            var m = new RateManager();
-            var r = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1));
-            m.AddCbRate(r);
-
-            double result = m.Convert(r, 100, "RUB", "USD");
-
-            Assert.Equal(100.0/70.0, result, 5);
-        }
-
-        [Fact]
-        public void Convert_InactiveRate_Throws()
-        {
-            var m = new RateManager();
-            var r = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1), false);
-            m.AddCbRate(r);
-
-            Assert.Throws<Exception>(() => m.Convert(r, 100, "RUB", "USD"));
+                Assert.Equal(2, cb);
+                Assert.Equal(1, ex);
+                Assert.Single(errors);
+                Assert.Contains("Строка 4", errors[0]);
+            }
+            finally
+            {
+                File.Delete(path);
+            }
         }
     }
 }

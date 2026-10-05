@@ -6,7 +6,6 @@ using System.Text;
 
 namespace pis1
 {
-
     public class RateManager
     {
         private readonly List<Rate> cbRates = new List<Rate>();
@@ -15,6 +14,10 @@ namespace pis1
         public int CbCount => cbRates.Count;
         public int ExchangerCount => exchangers.Count;
 
+        public bool IsEmpty() => cbRates.Count == 0 && exchangers.Count == 0;
+
+        public IReadOnlyList<Rate> GetCbRates() => cbRates;
+        public IReadOnlyList<Exchanger> GetExchangers() => exchangers;
 
         public void AddCbRate(Rate r)
         {
@@ -27,11 +30,6 @@ namespace pis1
             if (e == null) throw new ArgumentNullException(nameof(e));
             exchangers.Add(e);
         }
-
-
-        public IReadOnlyList<Rate> GetCbRates() => cbRates;
-        public IReadOnlyList<Exchanger> GetExchangers() => exchangers;
-        public bool IsEmpty() => cbRates.Count == 0 && exchangers.Count == 0;
 
         public Rate FindCbRate(string from, string to)
         {
@@ -64,7 +62,6 @@ namespace pis1
 
             return converter.Convert(amount, from, to);
         }
-
 
         public (int cb, int ex, List<string> errors) LoadFromFile(string path)
         {
@@ -107,25 +104,27 @@ namespace pis1
                     }
 
                     string[] parts = rest.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length != 4)
-                        throw new FormatException("должно быть 4 поля после имени");
+
+                    if (parts.Length != 5)
+                        throw new FormatException("должно быть 5 полей после имени");
 
                     string from = parts[0];
                     string to = parts[1];
                     double course = double.Parse(parts[2], CultureInfo.InvariantCulture);
                     DateTime date = DateTime.ParseExact(parts[3], "yyyy.MM.dd",
                                                         CultureInfo.InvariantCulture);
+                    bool isActive = bool.Parse(parts[4]);
 
                     if (owner.Equals("ЦБ", StringComparison.OrdinalIgnoreCase) ||
                         owner.Equals("ЦБРФ", StringComparison.OrdinalIgnoreCase) ||
                         owner.Equals("CB", StringComparison.OrdinalIgnoreCase))
                     {
-                        cbRates.Add(new Rate(from, to, course, date));
+                        cbRates.Add(new Rate(from, to, course, date, isActive));
                         loadedCb++;
                     }
                     else
                     {
-                        exchangers.Add(new Exchanger(from, to, date, owner, course));
+                        exchangers.Add(new Exchanger(from, to, date, owner, course, isActive));
                         loadedEx++;
                     }
                 }
@@ -142,7 +141,7 @@ namespace pis1
         {
             var lines = new List<string>();
 
-            lines.Add("# чей_курс валюта_из валюта_куда курс дата");
+            lines.Add("# чей_курс валюта_из валюта_куда курс дата активен");
             lines.Add("# строки, начинающиеся с #, при чтении пропускаются");
             lines.Add("");
 
@@ -150,14 +149,16 @@ namespace pis1
             {
                 string course = r.Course.ToString(CultureInfo.InvariantCulture);
                 string date = r.Date.ToString("yyyy.MM.dd", CultureInfo.InvariantCulture);
-                lines.Add($"ЦБ {r.From} {r.To} {course} {date}");
+                string active = r.IsActive ? "true" : "false";
+                lines.Add($"ЦБ {r.From} {r.To} {course} {date} {active}");
             }
 
             foreach (var ex in exchangers)
             {
                 string course = ex.OwnCourse.ToString(CultureInfo.InvariantCulture);
                 string date = ex.Date.ToString("yyyy.MM.dd", CultureInfo.InvariantCulture);
-                lines.Add($"\"{ex.Name}\" {ex.From} {ex.To} {course} {date}");
+                string active = ex.IsActive ? "true" : "false";
+                lines.Add($"\"{ex.Name}\" {ex.From} {ex.To} {course} {date} {active}");
             }
 
             File.WriteAllLines(path, lines, Encoding.UTF8);

@@ -23,7 +23,7 @@ namespace pis1
         public virtual string toString()
         {
             string status = IsActive ? "" : " [НЕАКТИВЕН]";
-            return $"[ЦБ РФ] Курс {From} к {To} = {Course} на {Date:yyyy.MM.dd}{status}";
+            return $"[ЦБ] Курс {From} к {To} = {Course} на {Date:yyyy.MM.dd}{status}";
         }
 
         public bool Matches(string from, string to)

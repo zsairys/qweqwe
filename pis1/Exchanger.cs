@@ -19,7 +19,7 @@ namespace pis1
         public override string toString()
         {
             string status = IsActive ? "" : " [НЕАКТИВЕН]";
-            return $"[{Name}] {From}->{To}: курс {OwnCourse} на {Date:yyyy.MM.dd}{status}";
+            return $"[{Name}] {From}-{To}: курс {OwnCourse} на {Date:yyyy.MM.dd}{status}";
         }
 
         public override double Convert(double amount, string from, string to)
@@ -32,7 +32,7 @@ namespace pis1
                 To.ToUpper() == from.ToUpper())
                 return amount * OwnCourse;
 
-            throw new Exception($"Курс {From}->{To} не подходит для {from}->{to}");
+            throw new Exception($"Курс {From}-{To} не подходит для {from}->{to}");
         }
     }
 }

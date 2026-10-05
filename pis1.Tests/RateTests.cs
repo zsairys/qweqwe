@@ -1,72 +1,47 @@
 using System;
+using pis1;
 using Xunit;
-
 
 namespace pis1.Tests
 {
     public class RateTests
     {
         [Fact]
-        public void Matches_SamePair_ReturnsTrue()
-        {
-            var r = new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1));
-
-            Assert.True(r.Matches("USD", "RUB"));
-        }
-
-        [Fact]
-        public void Matches_DifferentPair_ReturnFalse()
-        {
-            var r = new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1));
-
-            Assert.False(r.Matches("EUR", "RUB"));
-        }
-
-        [Fact]
-        public void Matches_IgnoresCase()
-        {
-            var r = new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1));
-
-            Assert.True(r.Matches("usd", "rub"));
-            Assert.True(r.Matches("Usd", "Rub"));
-        }
-
-        [Fact]
-        public void Convert_DirectDirection_Divides()
+        public void Rate_AllBehaviors()
         {
             var r = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1));
-            double result = r.Convert(100, "RUB", "USD");
-            Assert.Equal(100.0 / 70.0, result, 5);
-        }
 
-        [Fact]
-        public void Convert_ReverseDirection_Multiplies()
-        {
-            var r = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1));
-            double result = r.Convert(100, "USD", "RUB");
-            Assert.Equal(100.0 * 70.0, result, 5);
-        }
+            Assert.True(r.Matches("RUB", "USD"));
+            Assert.True(r.Matches("rub", "usd"));
+            Assert.False(r.Matches("EUR", "USD"));
 
-        [Fact]
-        public void Convert_WrongPair_Throws()
-        {
-            var r = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1));
+            Assert.Equal(100.0 / 70.0, r.Convert(100, "RUB", "USD"), 5);
+            Assert.Equal(100.0 * 70.0, r.Convert(100, "USD", "RUB"), 5);
+
             Assert.Throws<Exception>(() => r.Convert(100, "EUR", "GBP"));
-        }
 
-        [Fact]
-        public void IsActive_DefaultTrue()
-        {
-            var r = new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1));
+            Assert.Contains("RUB", r.toString());
+            Assert.Contains("USD", r.toString());
+            Assert.Contains("70", r.toString());
+
             Assert.True(r.IsActive);
+
+            Rate inactive = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1), false);
+            Assert.False(inactive.IsActive);
+            Assert.Contains("Õ≈¿ “»¬≈Õ", inactive.toString());
         }
 
-        [Fact]
-        public void ToString_InactiveRate_ContainsMarker()
+        [Theory]
+        [InlineData("RUB", "USD", true)]
+        [InlineData("rub", "usd", true)]
+        [InlineData("Rub", "Usd", true)]
+        [InlineData("EUR", "USD", false)]
+        [InlineData("RUB", "EUR", false)]
+        [InlineData("", "", false)]
+        public void Rate_Matches_Various(string from, string to, bool expected)
         {
-            var r = new Rate("USD", "RUB", 92.5, new DateTime(2026, 1, 1), false);
-
-            Assert.Contains("Õ≈¿ “»¬≈Õ", r.toString());
+            var r = new Rate("RUB", "USD", 70, new DateTime(2026, 1, 1));
+            Assert.Equal(expected, r.Matches(from, to));
         }
     }
 }
