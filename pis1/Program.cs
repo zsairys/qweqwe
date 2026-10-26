@@ -132,7 +132,7 @@ namespace pis1
             }
             catch (FormatException)
             {
-                Console.WriteLine("Неверный формат данных!");
+                Console.WriteLine("Неверный формат данных");
             }
             catch (Exception ex)
             {

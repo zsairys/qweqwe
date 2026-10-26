@@ -43,7 +43,7 @@ namespace pis1.Tests
 
             Assert.NotNull(m.FindCbRate("RUB", "USD"));
             Assert.NotNull(m.FindCbRate("USD", "RUB"));
-            Assert.Null(m.FindCbRate("EUR", "RUB"));
+            Assert.Null(m.FindCbRate("EUR", "USD"));
             Assert.Null(m.FindCbRate("GBP", "JPY"));
         }
 
